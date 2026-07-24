@@ -1,25 +1,39 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Logo from "../Logo/Logo";
+import DesktopMenu from "./DesktopMenu";
+import MobileMenu from "./MobileMenu";
 
-function Navbar() {
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 15);
+    };
+
+    window.addEventListener("scroll", onScroll);
+
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="border-b bg-white shadow-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link
-          to="/"
-          className="text-2xl font-bold text-green-600"
-        >
-          SEBA
-        </Link>
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100"
+          : "bg-transparent"
+      }`}
+    >
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
+        {/* Logo */}
+        <Logo />
 
-        <nav className="flex items-center gap-6">
-          <Link to="/">Home</Link>
-          <Link to="/businesses">Businesses</Link>
-          <Link to="/categories">Categories</Link>
-          <Link to="/login">Login</Link>
-        </nav>
+        {/* Desktop */}
+        <DesktopMenu />
+
+        {/* Mobile */}
+        <MobileMenu />
       </div>
     </header>
   );
 }
-
-export default Navbar;
