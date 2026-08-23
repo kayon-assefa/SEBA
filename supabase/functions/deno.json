@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.ns", "dom", "dom.iterable", "es2023"],
+    "strict": true,
+    "types": ["./send-push/web-push.d.ts"]
+  },
+  "nodeModulesDir": "auto"
+}

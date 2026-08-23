@@ -1,0 +1,23 @@
+// File: src/features/onboarding/data/categories.ts
+export const BUSINESS_CATEGORIES = [
+  "Restaurant",
+  "Cafe",
+  "Hotel",
+  "Salon",
+  "Barbershop",
+  "Spa",
+  "Clinic",
+  "Hospital",
+  "Pharmacy",
+  "Gym",
+  "Shopping",
+  "Electronics",
+  "Education",
+  "Real Estate",
+  "Automotive",
+  "Professional Services",
+  "Photography",
+  "Travel",
+  "Entertainment",
+  "Other",
+];

@@ -1,196 +1,545 @@
+/* =========================================================
+   SEBA — index.css
+   Global styles, components, and utility systems
+   ========================================================= */
+@import "./styles/animations.css";
 @import "tailwindcss";
+@import "./styles/theme.css";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 
-@custom-variant dark (&:is(.dark *));
+/* =========================================================
+   1. BASE / RESET
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 :root {
-  --background: #FFF8F6;
-  --foreground: #1E1E1E;
+  font-family: var(--font-seba-body);
+  color: var(--color-seba-text);
+  background: var(--color-seba-bg);
 
-  --primary: #FF5A5F;
-  --primary-foreground: #FFFFFF;
-
-  --secondary: #8B1E2D;
-  --secondary-foreground: #FFFFFF;
-
-  --accent: #D9A441;
-  --accent-foreground: #1E1E1E;
-
-  --muted: #FFF2F2;
-  --muted-foreground: #707070;
-
-  --border: #F1D7D7;
-  --input: #FFFFFF;
-  --ring: #FF5A5F;
-
-  --radius: 1rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-#root {
-  min-height: 100vh;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
-  background: var(--background);
-  color: var(--foreground);
-  font-family: "Geist Variable", sans-serif;
+  background: var(--color-seba-bg);
+  color: var(--color-seba-text);
+  min-height: 100vh;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  
+#root {
+  min-height: 100vh;
+  overflow-x: clip; /* keep decorative shapes from causing horizontal scroll */
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+::selection {
+  background: var(--color-seba-primary-light);
+  color: var(--color-seba-text);
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+
+/* =========================================================
+   2. TYPOGRAPHY
+   ========================================================= */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: var(--tracking-seba-tight);
+  color: inherit;
+  line-height: 1.1;
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
+h1 {
+  font-size: clamp(2.75rem, 5vw + 1rem, 5.5rem);
+  letter-spacing: var(--tracking-seba-tight);
+}
+
+h2 {
+  font-size: clamp(2rem, 3vw + 1rem, 3.25rem);
+  letter-spacing: var(--tracking-seba-snug);
+}
+
+h3 {
+  font-size: clamp(1.375rem, 1.2vw + 1rem, 1.75rem);
+  letter-spacing: var(--tracking-seba-snug);
+}
+
+p {
+  line-height: 1.7;
+  color: var(--color-seba-gray);
+  margin: 0;
+}
+
+.seba-eyebrow {
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-seba-secondary);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  color: var(--foreground);
-  font-weight: 700;
-}
-@theme inline {
-  --font-heading: var(--font-sans);
-  --font-sans: 'Geist Variable', sans-serif;
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+.seba-text-muted {
+  color: var(--color-seba-gray-light);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+.seba-text-gradient {
+  background: linear-gradient(
+    100deg,
+    var(--color-seba-secondary) 0%,
+    var(--color-seba-primary) 55%,
+    var(--color-seba-gold) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;}
-  body {
-    @apply bg-background text-foreground;}
-  html {
-    @apply font-sans;}}
+/* =========================================================
+   3. BUTTON SYSTEM
+   Primary / Secondary / Ghost / Gold
+   ========================================================= */
+
+.seba-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border: none;
+  border-radius: var(--radius-seba-pill);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    transform var(--duration-seba-fast) var(--ease-seba),
+    box-shadow var(--duration-seba-fast) var(--ease-seba),
+    background-color var(--duration-seba-fast) var(--ease-seba),
+    opacity var(--duration-seba-fast) var(--ease-seba);
+}
+
+.seba-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-seba-bg),
+    0 0 0 4px var(--color-seba-primary);
+}
+
+/* Primary — coral fill with subtle inner glow */
+.seba-button-primary {
+  background: linear-gradient(180deg, #FF6B70 0%, var(--color-seba-primary) 100%);
+  color: #FFFFFF;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    var(--shadow-seba-sm);
+}
+
+.seba-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    var(--shadow-seba-hover);
+  background: linear-gradient(180deg, #FF7B80 0%, var(--color-seba-primary-dark) 100%);
+}
+
+.seba-button-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-seba-sm);
+}
+
+/* Secondary — deep burgundy outline */
+.seba-button-secondary {
+  background: var(--color-seba-surface);
+  color: var(--color-seba-secondary);
+  border: 1.5px solid rgba(139, 30, 45, 0.25);
+  box-shadow: var(--shadow-seba-sm);
+}
+
+.seba-button-secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-seba-secondary);
+  box-shadow: var(--shadow-seba-md);
+}
+
+/* Ghost — text only, minimal */
+.seba-button-ghost {
+  background: transparent;
+  color: var(--color-seba-text);
+  padding: 14px 20px;
+}
+
+.seba-button-ghost:hover {
+  background: rgba(30, 30, 30, 0.04);
+  transform: translateY(-1px);
+}
+
+/* Gold — premium / emphasis moments only */
+.seba-button-gold {
+  background: linear-gradient(180deg, var(--color-seba-gold-light) 0%, var(--color-seba-gold) 100%);
+  color: #3A2A0E;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    var(--shadow-seba-sm);
+}
+
+.seba-button-gold:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    var(--shadow-seba-gold-glow);
+}
+
+/* =========================================================
+   4. GLASS / FROSTED CARD SYSTEM
+   Elevation levels 1–3
+   ========================================================= */
+
+.seba-card {
+  background: var(--color-seba-surface);
+  border-radius: var(--radius-seba-card);
+  border: 1px solid rgba(30, 18, 14, 0.06);
+  box-shadow: var(--shadow-seba-md);
+  padding: 32px;
+  transition:
+    transform var(--duration-seba) var(--ease-seba),
+    box-shadow var(--duration-seba) var(--ease-seba),
+    border-color var(--duration-seba) var(--ease-seba);
+}
+
+.seba-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-seba-hover);
+  border-color: rgba(255, 90, 95, 0.18);
+}
+
+/* Elevation variants */
+.seba-card-sm {
+  border-radius: var(--radius-seba-card-sm);
+  padding: 24px;
+  box-shadow: var(--shadow-seba-sm);
+}
+
+.seba-card-lg {
+  padding: 48px;
+  box-shadow: var(--shadow-seba-lg);
+}
+
+/* Frosted / glass variant — for use over shapes or gradients */
+.seba-card-glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-seba-md);
+}
+
+/* Card with subtle gradient overlay */
+.seba-card-tint::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(160deg, rgba(255, 90, 95, 0.06), transparent 60%);
+  pointer-events: none;
+}
+
+.seba-card-tint {
+  position: relative;
+  overflow: hidden;
+}
+
+/* =========================================================
+   5. BRAND SHAPE SYSTEM
+   Circles, blobs, half/quarter circles — decorative
+   ========================================================= */
+
+.seba-shape {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.seba-circle {
+  border-radius: 50%;
+  background: var(--color-seba-primary);
+  opacity: 0.14;
+  filter: blur(2px);
+}
+
+.seba-circle-soft {
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--color-seba-primary-light), transparent 70%);
+  opacity: 0.5;
+  filter: blur(30px);
+}
+
+.seba-blob {
+  background: var(--color-seba-secondary);
+  border-radius: 58% 42% 62% 38% / 42% 58% 42% 58%;
+  opacity: 0.10;
+}
+
+.seba-blob-gold {
+  background: var(--color-seba-gold);
+  border-radius: 42% 58% 38% 62% / 62% 38% 62% 38%;
+  opacity: 0.16;
+}
+
+/* Half / quarter circle utilities */
+.seba-half-circle {
+  border-radius: 999px 999px 0 0;
+  background: var(--color-seba-primary);
+  opacity: 0.12;
+}
+
+.seba-quarter-circle {
+  border-radius: 100% 0 0 0;
+  background: var(--color-seba-secondary);
+  opacity: 0.10;
+}
+
+/* Blur intensity helpers */
+.seba-blur-sm { filter: blur(8px); }
+.seba-blur-md { filter: blur(24px); }
+.seba-blur-lg { filter: blur(48px); }
+
+/* Opacity helpers for shapes */
+.seba-opacity-low { opacity: 0.08; }
+.seba-opacity-mid { opacity: 0.16; }
+.seba-opacity-high { opacity: 0.28; }
+
+/* =========================================================
+   6. SECTION BACKGROUND SYSTEM
+   ========================================================= */
+
+.seba-section-cream {
+  background: var(--color-seba-bg);
+}
+
+.seba-section-warm {
+  background: linear-gradient(180deg, var(--color-seba-bg) 0%, var(--color-seba-section) 100%);
+}
+
+.seba-section-red-gradient {
+  background: linear-gradient(135deg, #FFF2F2 0%, #FFE0DE 50%, #FFD3D4 100%);
+}
+
+.seba-section-deep {
+  background: linear-gradient(160deg, var(--color-seba-secondary) 0%, #6E1622 100%);
+  color: var(--color-seba-bg);
+}
+
+.seba-section-deep h1,
+.seba-section-deep h2,
+.seba-section-deep h3,
+.seba-section-deep p {
+  color: inherit;
+}
+
+.seba-section-surface {
+  background: var(--color-seba-surface);
+}
+
+/* Subtle geometric pattern overlay (dot grid) */
+.seba-pattern-dots {
+  background-image: radial-gradient(rgba(30, 18, 14, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.seba-pattern-dots-deep {
+  background-image: radial-gradient(rgba(255, 248, 246, 0.10) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* =========================================================
+   7. MICRO-INTERACTION UTILITIES
+   ========================================================= */
+
+.fade-up {
+  animation: sebaFadeUp var(--duration-seba-slow) var(--ease-seba) forwards;
+}
+
+.soft-scale {
+  transition: transform var(--duration-seba) var(--ease-seba);
+}
+
+.soft-scale:hover {
+  transform: scale(1.03);
+}
+
+.gentle-float {
+  animation: sebaFloat 6s var(--ease-seba) infinite;
+}
+
+@keyframes sebaFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes sebaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up,
+  .gentle-float,
+  .soft-scale,
+  .seba-button,
+  .seba-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* =========================================================
+   8. FOCUS & ACCESSIBILITY
+   ========================================================= */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-seba-bg),
+    0 0 0 4px var(--color-seba-primary);
+  border-radius: var(--radius-seba-el-sm);
+}
+
+/* =========================================================
+   9. CONTAINER & LAYOUT HELPERS
+   ========================================================= */
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 24px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: 40px;
+  }
+}
+
+.seba-section-spacing {
+  padding-block: clamp(64px, 8vw, 140px);
+}
+
+.seba-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.seba-stack-lg {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+/* =========================================================
+   10. Animations
+   ========================================================= */
+   /* SEBA — motion primitives
+   Calm, smooth, never bouncy. Import once in globals.css:
+   @import "../styles/animations.css";
+*/
+
+@keyframes seba-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes seba-float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes seba-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes seba-scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Gentle horizontal drift for the wave divider — a loop, not a bounce */
+@keyframes seba-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Soft radiating pulse for small "live" indicators, e.g. a Popular dot */
+@keyframes seba-pulse-dot {
+  0% { transform: scale(1); opacity: 0.6; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+.animate-float {
+  animation: seba-float 7s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: seba-float-slow 10s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: seba-wave 22s linear infinite;
+}
+
+.animate-pulse-dot {
+  animation: seba-pulse-dot 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scroll-reveal target state, toggled by the <Reveal> component */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-slow,
+  .animate-wave,
+  .animate-pulse-dot {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

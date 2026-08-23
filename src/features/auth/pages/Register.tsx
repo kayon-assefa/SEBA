@@ -1,87 +1,81 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
-import { registerSchema } from "../../../shared/validation/auth.schema";
-import type { RegisterFormData } from "../../../shared/validation/auth.schema";
 
+import AuthCard from "../components/AuthCard";
+import { registerUser } from "../services/auth.service";
 
-
-import { authService } from "../services/auth.service";
-
-function Register() {
+export default function Register() {
+  const [businessName, setBusinessName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-  });
-const onSubmit = async (data: RegisterFormData) => {
-  setLoading(true);
+  async function handleRegister() {
+    if (!businessName.trim() || !email.trim() || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
 
-  const { data: authData, error } = await authService.signUp(
-    data.email,
-    data.password,
-    data.fullName
-  );
+    try {
+      setLoading(true);
 
-  setLoading(false);
+      await registerUser(email, password, businessName);
 
-  if (error) {
-    toast.error(error.message);
-    return;
+      toast.success("Account created. Check your email.");
+
+      // Go to verify-email page (pass email so we can show it + allow resend)
+      window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  toast.success("Account created successfully!");
-  console.log(authData);
-};
-  
-
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: "50px auto",
-      }}
+    <AuthCard
+      title="Create account"
+      subtitle="Join Ethiopia's modern business community"
     >
-      <h1>Create Account</h1>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <div className="space-y-5">
         <input
-          placeholder="Full Name"
-          {...register("fullName")}
+          className="w-full rounded-xl border p-3"
+          placeholder="Business Name"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
         />
-        <p>{errors.fullName?.message}</p>
 
         <input
+          className="w-full rounded-xl border p-3"
           placeholder="Email"
-          {...register("email")}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
-        <p>{errors.email?.message}</p>
 
         <input
-          type="password"
+          className="w-full rounded-xl border p-3"
           placeholder="Password"
-          {...register("password")}
-        />
-        <p>{errors.password?.message}</p>
-
-        <input
           type="password"
-          placeholder="Confirm Password"
-          {...register("confirmPassword")}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
-        <p>{errors.confirmPassword?.message}</p>
 
-        <button disabled={loading}>
+        <button
+          onClick={handleRegister}
+          disabled={loading}
+          className="w-full rounded-xl bg-[#FF5A5F] py-3 text-white font-bold disabled:opacity-60"
+        >
           {loading ? "Creating..." : "Create Account"}
         </button>
-      </form>
-    </div>
+
+        <p className="text-center text-sm">
+          Already have an account?
+          <a href="/login" className="ml-1 text-[#FF5A5F]">
+            Login
+          </a>
+        </p>
+      </div>
+    </AuthCard>
   );
 }
-
-export default Register;

@@ -1,0 +1,1 @@
+export { PublicAppointmentPage } from "./PublicAppointmentPage";

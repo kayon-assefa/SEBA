@@ -1,0 +1,2 @@
+import {useEffect,useState} from "react";import {getCurrentStaff,getAppointments} from "../services/staffData";
+export default function StaffSchedule(){const[r,setR]=useState<any[]>([]);useEffect(()=>{getCurrentStaff().then(s=>getAppointments(s.business_id)).then(setR).catch(console.error)},[]);return <section><h1>Schedule</h1>{r.map(a=><div key={a.id} style={{background:"#fff",padding:16,marginBottom:8}}>{a.date} {a.time} — {a.customer} — {a.service}</div>)}</section>}

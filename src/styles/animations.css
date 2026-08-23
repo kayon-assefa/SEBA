@@ -1,0 +1,78 @@
+/* SEBA — motion primitives
+   Calm, smooth, never bouncy. Import once in globals.css:
+   @import "../styles/animations.css";
+*/
+
+@keyframes seba-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes seba-float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes seba-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes seba-scale-in {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Gentle horizontal drift for the wave divider — a loop, not a bounce */
+@keyframes seba-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Soft radiating pulse for small "live" indicators, e.g. a Popular dot */
+@keyframes seba-pulse-dot {
+  0% { transform: scale(1); opacity: 0.6; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+.animate-float {
+  animation: seba-float 7s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: seba-float-slow 10s ease-in-out infinite;
+}
+
+.animate-wave {
+  animation: seba-wave 22s linear infinite;
+}
+
+.animate-pulse-dot {
+  animation: seba-pulse-dot 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scroll-reveal target state, toggled by the <Reveal> component */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-slow,
+  .animate-wave,
+  .animate-pulse-dot {
+    animation: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

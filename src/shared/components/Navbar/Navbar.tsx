@@ -1,39 +1,39 @@
-import { useEffect, useState } from "react";
-import Logo from "../Logo/Logo";
+import { Link } from "react-router-dom";
 import DesktopMenu from "./DesktopMenu";
 import MobileMenu from "./MobileMenu";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 15);
-    };
-
-    window.addEventListener("scroll", onScroll);
-
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-        scrolled
-          ? "bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-10">
-        {/* Logo */}
-        <Logo />
+    <header className="sticky top-0 z-50 w-full">
+      <nav
+        className="
+          relative w-full
+          bg-white/60 backdrop-blur-2xl backdrop-saturate-150
+          border-b border-white/40
+          shadow-[0_8px_32px_-8px_rgba(255,59,48,0.08)]
+        "
+      >
+        {/* subtle top highlight to sell the glass */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
 
-        {/* Desktop */}
-        <DesktopMenu />
+        <div className="max-w-7xl mx-auto px-6 lg:px-10">
+          <div className="flex h-16 lg:h-[68px] items-center justify-between">
+            {/* Logo */}
+            <Link
+              to="/"
+              className="text-lg font-extrabold tracking-tight text-[#FF3B30] transition-opacity hover:opacity-80"
+            >
+              SEBA
+            </Link>
 
-        {/* Mobile */}
-        <MobileMenu />
-      </div>
+            {/* Desktop nav */}
+            <DesktopMenu />
+
+            {/* Mobile menu trigger lives inside MobileMenu */}
+            <MobileMenu />
+          </div>
+        </div>
+      </nav>
     </header>
   );
 }
