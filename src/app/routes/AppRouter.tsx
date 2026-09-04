@@ -1,8 +1,9 @@
 // File:
-// src/app/router/AppRouter.tsx
+// src/app/routes/AppRouter.tsx
 
 import {
   createBrowserRouter,
+  Navigate,
   RouterProvider,
 } from "react-router-dom";
 
@@ -87,11 +88,29 @@ import Notifications from "../../features/notifications/pages/Notifications";
 
 /*
 |--------------------------------------------------------------------------
+| SUBSCRIPTION
+|--------------------------------------------------------------------------
+*/
+
+import { SubscriptionPage } from "../../features/subscription";
+
+/*
+|--------------------------------------------------------------------------
 | STAFF
 |--------------------------------------------------------------------------
 */
-import { StaffLayout, StaffDashboard, StaffAppointments, StaffOrders, StaffCustomers, StaffNotifications, StaffSchedule } from "../../features/staff";
 
+import {
+  StaffLayout,
+  StaffDashboard,
+  StaffAppointments,
+  StaffOrders,
+  StaffCustomers,
+  StaffNotifications,
+  StaffSchedule,
+  StaffScan,
+  StaffSettings,
+} from "../../features/staff";
 
 /*
 |--------------------------------------------------------------------------
@@ -100,8 +119,6 @@ import { StaffLayout, StaffDashboard, StaffAppointments, StaffOrders, StaffCusto
 */
 
 import NotFound from "../../pages/NotFound";
-
-
 /*
 |--------------------------------------------------------------------------
 | ROUTER
@@ -155,10 +172,9 @@ const router = createBrowserRouter([
     ],
   },
 
-
   /*
   |--------------------------------------------------------------------------
-  | PUBLIC BUSINESS PAGES
+  | PUBLIC BUSINESS BOOKING
   |--------------------------------------------------------------------------
   */
 
@@ -167,20 +183,21 @@ const router = createBrowserRouter([
     element: <PublicAppointmentPage />,
   },
 
+  /*
+  |--------------------------------------------------------------------------
+  | PUBLIC BUSINESS SHOP
+  |--------------------------------------------------------------------------
+  */
+
   {
     path: "/:username/shop",
     element: <PublicShopPage />,
   },
 
-
   /*
   |--------------------------------------------------------------------------
   | ONBOARDING
   |--------------------------------------------------------------------------
-  |
-  | Do NOT use ProtectedRoute here.
-  | Logged-in users still need access while completing onboarding.
-  |
   */
 
   {
@@ -228,7 +245,6 @@ const router = createBrowserRouter([
     ),
   },
 
-
   /*
   |--------------------------------------------------------------------------
   | AUTHENTICATION
@@ -265,17 +281,10 @@ const router = createBrowserRouter([
     ],
   },
 
-
   /*
   |--------------------------------------------------------------------------
   | OWNER DASHBOARD
   |--------------------------------------------------------------------------
-  |
-  | ProtectedRoute handles:
-  | - authentication
-  | - owner access
-  | - onboarding completion
-  |
   */
 
   {
@@ -288,75 +297,192 @@ const router = createBrowserRouter([
     ),
 
     children: [
+      /*
+      |--------------------------------------------------------------------------
+      | DASHBOARD HOME
+      |--------------------------------------------------------------------------
+      */
+
       {
         index: true,
         element: <Dashboard />,
       },
+
+      /*
+      |--------------------------------------------------------------------------
+      | APPOINTMENTS
+      |--------------------------------------------------------------------------
+      */
 
       {
         path: "appointments",
         element: <Appointments />,
       },
 
+      /*
+      |--------------------------------------------------------------------------
+      | ANALYTICS
+      |--------------------------------------------------------------------------
+      */
+
       {
         path: "analytics",
         element: <Analytics />,
       },
+
+      /*
+      |--------------------------------------------------------------------------
+      | CUSTOMERS
+      |--------------------------------------------------------------------------
+      */
 
       {
         path: "customers",
         element: <Customers />,
       },
 
+      /*
+      |--------------------------------------------------------------------------
+      | ORDERS
+      |--------------------------------------------------------------------------
+      */
+
       {
         path: "orders",
         element: <Orders />,
       },
+
+      /*
+      |--------------------------------------------------------------------------
+      | SETTINGS
+      |--------------------------------------------------------------------------
+      */
 
       {
         path: "settings",
         element: <Settings />,
       },
 
+      /*
+      |--------------------------------------------------------------------------
+      | PRODUCTS
+      |--------------------------------------------------------------------------
+      */
+
       {
         path: "products",
         element: <Products />,
       },
+
+      /*
+      |--------------------------------------------------------------------------
+      | SUBSCRIPTION
+      |--------------------------------------------------------------------------
+      |
+      | URL:
+      | /dashboard/subscription
+      |
+      */
+
+      {
+        path: "subscription",
+        element: <SubscriptionPage />,
+      },
     ],
   },
 
+  /*
+  |--------------------------------------------------------------------------
+  | NOTIFICATIONS
+  |--------------------------------------------------------------------------
+  */
+
   {
     path: "/notifications",
+
     element: (
       <ProtectedRoute>
-        <Notifications />
+        <DashboardLayout />
       </ProtectedRoute>
     ),
+
+    children: [
+      {
+        index: true,
+        element: <Notifications />,
+      },
+    ],
   },
 
-/*
-|--------------------------------------------------------------------------
-| STAFF DASHBOARD
-|--------------------------------------------------------------------------
-*/
+  // Retain the original billing URL so existing bookmarks and payment return
+  // URLs continue to reach the authenticated subscription page.
+  {
+    path: "/subscription",
+    element: <Navigate to="/dashboard/subscription" replace />,
+  },
 
-{
-  path: "/staff",
-  element: (
-    <ProtectedRoute>
-      <StaffLayout />
-    </ProtectedRoute>
-  ),
-  children: [
-    { index: true, element: <StaffDashboard /> },
-    { path: "dashboard", element: <StaffDashboard /> },
-    { path: "appointments", element: <StaffAppointments /> },
-    { path: "orders", element: <StaffOrders /> },
-    { path: "customers", element: <StaffCustomers /> },
-    { path: "notifications", element: <StaffNotifications /> },
-    { path: "schedule", element: <StaffSchedule /> },
-  ],
-},
+  /*
+  |--------------------------------------------------------------------------
+  | STAFF DASHBOARD
+  |--------------------------------------------------------------------------
+  */
+
+  {
+    path: "/staff",
+
+    element: (
+      <ProtectedRoute>
+        <StaffLayout />
+      </ProtectedRoute>
+    ),
+
+    children: [
+      {
+        index: true,
+        element: <StaffDashboard />,
+      },
+
+      {
+        path: "dashboard",
+        element: <StaffDashboard />,
+      },
+
+      {
+        path: "appointments",
+        element: <StaffAppointments />,
+      },
+
+      {
+        path: "orders",
+        element: <StaffOrders />,
+      },
+
+      {
+        path: "customers",
+        element: <StaffCustomers />,
+      },
+
+      {
+        path: "notifications",
+        element: <StaffNotifications />,
+      },
+
+      {
+        path: "schedule",
+        element: <StaffSchedule />,
+      },
+
+      {
+        path: "scan",
+        element: <StaffScan />,
+      },
+
+      {
+        path: "settings",
+        element: <StaffSettings />,
+      },
+    ],
+  },
 
   /*
   |--------------------------------------------------------------------------
@@ -367,7 +493,7 @@ const router = createBrowserRouter([
   |
   | /legendbarber
   |
-  | This stays outside the dashboard/auth layouts.
+  | Keep this LAST among the application routes.
   |
   */
 
@@ -375,7 +501,6 @@ const router = createBrowserRouter([
     path: "/:username",
     element: <PublicBusinessRoute />,
   },
-
 
   /*
   |--------------------------------------------------------------------------
@@ -388,7 +513,6 @@ const router = createBrowserRouter([
     element: <NotFound />,
   },
 ]);
-
 
 /*
 |--------------------------------------------------------------------------

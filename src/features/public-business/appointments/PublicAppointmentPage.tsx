@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { supabase } from "../../../lib/supabase";
 import { usePublicBusiness } from "../hooks/usePublicBusiness";
+import { PublicBusinessUnavailable } from "../components/PublicBusinessUnavailable";
 import type {
   PublicAppointmentField,
   PublicStaffMember,
@@ -55,7 +56,11 @@ function formatTime(time: string) {
   const suffix = hour >= 12 ? "PM" : "AM";
   const displayHour = hour % 12 || 12;
 
-  return `${displayHour}:${String(minute).padStart(2, "0")} ${suffix}`;
+  const ethiopianHour = ((hour + 5) % 12) + 1;
+  const ethiopianPeriod = hour >= 6 && hour < 18 ? "ቀን" : "ሌሊት";
+  const formattedMinute = String(minute).padStart(2, "0");
+
+  return `${displayHour}:${formattedMinute} ${suffix} (${ethiopianHour}:${formattedMinute} ${ethiopianPeriod} የኢትዮጵያ ሰዓት)`;
 }
 
 export function PublicAppointmentPage() {
@@ -122,57 +127,10 @@ export function PublicAppointmentPage() {
    * The business hours are treated as the local business hours.
    */
   const availableTimes = useMemo(() => {
-    if (!business || !date) {
-      return [];
-    }
-
-    const selectedDate = new Date(`${date}T12:00:00`);
-
-    if (Number.isNaN(selectedDate.getTime())) {
-      return [];
-    }
-
-    const dayOfWeek = selectedDate.getDay();
-
-    const hours = business.workingHours.find(
-      (item) => item.dayOfWeek === dayOfWeek
-    );
-
-    if (
-      !hours ||
-      !hours.isOpen ||
-      !hours.openTime ||
-      !hours.closeTime
-    ) {
-      return [];
-    }
-
-    const [openHour, openMinute] = hours.openTime
-      .split(":")
-      .map(Number);
-
-    const [closeHour, closeMinute] = hours.closeTime
-      .split(":")
-      .map(Number);
-
-    if (
-      !Number.isFinite(openHour) ||
-      !Number.isFinite(openMinute) ||
-      !Number.isFinite(closeHour) ||
-      !Number.isFinite(closeMinute)
-    ) {
-      return [];
-    }
-
-    const start = openHour * 60 + openMinute;
-    const end = closeHour * 60 + closeMinute;
-
-    /*
-     * 30-minute booking slots.
-     */
     const slots: string[] = [];
 
-    for (let minutes = start; minutes < end; minutes += 30) {
+    // Booking is intentionally unrestricted: every 30-minute slot, 24/7.
+    for (let minutes = 0; minutes < 24 * 60; minutes += 30) {
       const hour = Math.floor(minutes / 60);
       const minute = minutes % 60;
 
@@ -184,7 +142,7 @@ export function PublicAppointmentPage() {
     }
 
     return slots;
-  }, [business, date]);
+  }, []);
 
   /*
    * ------------------------------------------------------------
@@ -241,6 +199,10 @@ export function PublicAppointmentPage() {
    * UNPUBLISHED
    * ------------------------------------------------------------
    */
+
+  if (!business.active || !business.published) {
+    return <PublicBusinessUnavailable business={business} />;
+  }
 
   if (!business.published) {
     return (
@@ -861,16 +823,13 @@ export function PublicAppointmentPage() {
                     setTime(event.target.value)
                   }
                   disabled={
-                    bookingDisabled ||
-                    availableTimes.length === 0
+                    bookingDisabled
                   }
                   className="mt-2 w-full rounded-xl border border-neutral-200 bg-white p-4 outline-none focus:border-[#F25F5C] focus:ring-2 focus:ring-[#F25F5C]/20"
                   required
                 >
                   <option value="">
-                    {availableTimes.length === 0
-                      ? "No times available"
-                      : "Choose a time"}
+                    Choose a time
                   </option>
 
                   {availableTimes.map((slot) => (
@@ -882,12 +841,6 @@ export function PublicAppointmentPage() {
               </label>
             </div>
 
-            {availableTimes.length === 0 && (
-              <p className="mt-3 text-sm text-neutral-500">
-                This date is outside the business's
-                configured working hours.
-              </p>
-            )}
           </section>
 
           {/* CUSTOMER */}

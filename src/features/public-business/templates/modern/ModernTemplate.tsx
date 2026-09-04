@@ -178,7 +178,7 @@ export function ModernTemplate({
             <img
               src={coverImage}
               alt={`${business.name} cover`}
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover" loading="lazy" decoding="async"
             />
           </div>
         ) : (
@@ -213,7 +213,7 @@ export function ModernTemplate({
                     <img
                       src={business.logoUrl}
                       alt={business.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover" loading="lazy" decoding="async"
                     />
                   ) : (
                     <span

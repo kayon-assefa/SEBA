@@ -2,6 +2,11 @@
 import { Outlet } from "react-router-dom";
 
 export default function AuthLayout() {
+  // AuthShell already owns the complete split-screen layout. Returning the
+  // outlet directly avoids rendering this legacy marketing panel as a third
+  // column beside it.
+  return <Outlet />;
+
   return (
     <div className="min-h-screen flex">
       {/* Local keyframes for the animated shape grid */}

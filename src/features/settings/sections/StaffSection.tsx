@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Check,
   ChevronDown,
@@ -348,9 +349,9 @@ export default function StaffSection() {
         {subscriptionActive && limitReached && (
           <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
             You've reached the {staffLimit}-account limit on the {plan} plan.{" "}
-            <a href="/subscription" className="font-semibold underline">
+            <Link to="/dashboard/subscription" className="font-semibold underline">
               Upgrade to add more.
-            </a>
+            </Link>
           </div>
         )}
 

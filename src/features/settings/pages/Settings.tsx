@@ -231,9 +231,9 @@ export default function Settings() {
     ) ?? settingsItems[0];
 
   return (
-    <div className="min-h-full bg-[#FAF7F0]">
+    <div className="seba-dashboard mx-auto w-full max-w-[1400px]">
       {/* PAGE HEADER */}
-      <div className="border-b bg-[#FFFDF8]">
+      <div className="seba-glass seba-rise">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <h1 className="text-2xl font-bold text-gray-900">
             Settings
@@ -280,7 +280,7 @@ export default function Settings() {
         <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
           {/* DESKTOP NAV */}
           <aside className="hidden lg:block">
-            <div className="sticky top-6 overflow-hidden rounded-2xl border border-gray-200 bg-[#FFFDF8]">
+            <div className="seba-glass sticky top-6 overflow-hidden">
               <div className="border-b px-4 py-4">
                 <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
                   Settings

@@ -1,0 +1,22 @@
+{
+  "name": "seba-auth",
+  "private": true,
+  "description": "SEBA auth pages — security-hardened, redesigned to match the logo, bilingual (EN/AM).",
+  "dependencies": {
+    "@simplewebauthn/browser": "^10.0.0",
+    "@supabase/supabase-js": "^2.45.0",
+    "react": "^18.3.0",
+    "react-bootstrap-icons": "^1.11.0",
+    "react-dom": "^18.3.0",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.26.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  },
+  "notes": {
+    "server-side-only": "@simplewebauthn/server runs inside the Supabase Edge Functions (Deno) and is imported there via npm: specifiers — it is NOT a dependency of this package.json / the browser bundle."
+  }
+}

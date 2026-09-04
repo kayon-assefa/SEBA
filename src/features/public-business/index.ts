@@ -16,3 +16,6 @@ export { PublicAppointmentPage } from "./appointments/PublicAppointmentPage";
 export { PublicShopPage } from "./shop/PublicShopPage";
 export * from "./types/appointment";
 export * from "./types/shop";
+
+export { PublicBusinessSeo } from "./components/PublicBusinessSeo";
+export { PublicTemplateExperience } from "./components/PublicTemplateExperience";

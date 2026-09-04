@@ -1,19 +1,19 @@
 import { NavLink } from "react-router-dom";
 
 const settingsLinks = [
-  { label: "General", path: "/settings/general" },
-  { label: "Business", path: "/settings/business" },
-  { label: "Booking", path: "/settings/booking" },
-  { label: "Shop", path: "/settings/shop" },
-  { label: "Page", path: "/settings/page" },
-  { label: "Staff", path: "/settings/staff" },
-  { label: "Notifications", path: "/settings/notifications" },
-  { label: "Subscription", path: "/settings/subscription" },
-  { label: "Integrations", path: "/settings/integrations" },
-  { label: "Security", path: "/settings/security" },
-  { label: "Data", path: "/settings/data" },
-  { label: "Branches", path: "/settings/branches" },
-  { label: "Danger Zone", path: "/settings/danger-zone" },
+  { label: "General", path: "/dashboard/settings?section=general" },
+  { label: "Business", path: "/dashboard/settings?section=business" },
+  { label: "Booking", path: "/dashboard/settings?section=booking" },
+  { label: "Shop", path: "/dashboard/settings?section=shop" },
+  { label: "Page", path: "/dashboard/settings?section=page" },
+  { label: "Staff", path: "/dashboard/settings?section=staff" },
+  { label: "Notifications", path: "/dashboard/settings?section=notifications" },
+  { label: "Subscription", path: "/dashboard/subscription" },
+  { label: "Integrations", path: "/dashboard/settings?section=integrations" },
+  { label: "Security", path: "/dashboard/settings?section=security" },
+  { label: "Data", path: "/dashboard/settings?section=data" },
+  { label: "Branches", path: "/dashboard/settings?section=branches" },
+  { label: "Danger Zone", path: "/dashboard/settings?section=danger" },
 ];
 
 export default function SettingsNavigation() {

@@ -91,6 +91,9 @@ export interface PublicBusiness {
 
   published: boolean;
 
+  /** True when the business subscription/page is active. */
+  active: boolean;
+
   temporarilyClosed: boolean;
 
   temporaryCloseReason: string | null;

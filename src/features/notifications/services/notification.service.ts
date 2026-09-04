@@ -235,7 +235,7 @@ export const notificationService = {
     const businessId = await getBusinessId();
 
     const channel = supabase
-      .channel(`notifications-${businessId}`)
+      .channel(`notifications-${businessId}-${crypto.randomUUID()}`)
       .on(
         "postgres_changes",
         {
@@ -252,7 +252,11 @@ export const notificationService = {
       )
       .subscribe();
 
+    let removed = false;
+
     return () => {
+      if (removed) return;
+      removed = true;
       supabase.removeChannel(channel);
     };
   },

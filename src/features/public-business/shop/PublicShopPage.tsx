@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { supabase } from "../../../lib/supabase";
 import { usePublicBusiness } from "../hooks/usePublicBusiness";
 import type { ShopCustomer } from "../types/shop";
+import { PublicBusinessUnavailable } from "../components/PublicBusinessUnavailable";
 
 function money(value: number | null | undefined) {
   if (value == null) return "Price on request";
@@ -27,6 +28,12 @@ export function PublicShopPage() {
     usePublicBusiness(username);
 
   const [category, setCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try { return JSON.parse(window.localStorage.getItem(`seba:wishlist:${username}`) || "[]"); } catch { return []; }
+  });
+  const [quickView, setQuickView] = useState<string | null>(null);
 
   const [cart, setCart] = useState<Record<string, number>>({});
 
@@ -74,10 +81,14 @@ export function PublicShopPage() {
       const matchesCategory =
         category === "All" ||
         product.category === category;
+      const term = search.trim().toLowerCase();
+      const matchesSearch = !term ||
+        product.name.toLowerCase().includes(term) ||
+        (product.description || "").toLowerCase().includes(term);
 
-      return matchesCategory;
+      return matchesCategory && matchesSearch;
     });
-  }, [business, category]);
+  }, [business, category, search]);
 
   /*
   |--------------------------------------------------------------------------
@@ -126,6 +137,16 @@ export function PublicShopPage() {
   | CART UPDATE
   |--------------------------------------------------------------------------
   */
+
+  function toggleWishlist(productId: string) {
+    setWishlist((previous) => {
+      const next = previous.includes(productId)
+        ? previous.filter((id) => id !== productId)
+        : [...previous, productId];
+      window.localStorage.setItem(`seba:wishlist:${username}`, JSON.stringify(next));
+      return next;
+    });
+  }
 
   function updateCart(
     productId: string,
@@ -449,6 +470,10 @@ export function PublicShopPage() {
   |--------------------------------------------------------------------------
   */
 
+  if (!business.active || !business.published) {
+    return <PublicBusinessUnavailable business={business} />;
+  }
+
   if (!business.published) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#FFFDFC] px-6">
@@ -557,7 +582,14 @@ export function PublicShopPage() {
       ========================================================= */}
 
       <section className="mx-auto max-w-7xl px-5 py-10 sm:py-14">
-        {/* CATEGORY FILTER */}
+        {/* SEARCH + CATEGORY FILTER */}
+
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+          <div className="seba-glass flex min-w-0 flex-1 items-center rounded-2xl px-4">
+            <span className="mr-2 text-neutral-400">⌕</span>
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search products..." className="w-full bg-transparent py-3 outline-none" />
+          </div>
+        </div>
 
         {categories.length > 1 && (
           <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
@@ -622,6 +654,10 @@ export function PublicShopPage() {
                 {/* IMAGE */}
 
                 <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
+                  <div className="absolute right-3 top-3 z-10 flex gap-2">
+                    <button type="button" aria-label="Wishlist" onClick={() => toggleWishlist(product.id)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/85 text-lg shadow-lg backdrop-blur">{wishlist.includes(product.id) ? "♥" : "♡"}</button>
+                    <button type="button" onClick={() => setQuickView(product.id)} className="rounded-full bg-white/85 px-3 py-2 text-xs font-black shadow-lg backdrop-blur">Quick view</button>
+                  </div>
                   {product.imageUrl ? (
                     <img
                       src={product.imageUrl}
@@ -747,6 +783,23 @@ export function PublicShopPage() {
           })}
         </div>
       </section>
+
+      {quickView && (() => {
+        const product = business.products.find((item) => item.id === quickView);
+        if (!product) return null;
+        return (
+          <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/50 p-5 backdrop-blur-sm" onClick={() => setQuickView(null)}>
+            <div className="w-full max-w-xl overflow-hidden rounded-[30px] bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              {product.imageUrl && <img src={product.imageUrl} alt={product.name} className="h-64 w-full object-cover" />}
+              <div className="p-7">
+                <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-widest text-neutral-400">{product.category || "Product"}</p><h2 className="mt-1 text-3xl font-black">{product.name}</h2></div><button onClick={() => setQuickView(null)} className="rounded-full bg-neutral-100 px-3 py-2 font-bold">×</button></div>
+                <p className="mt-4 leading-7 text-neutral-600">{product.description || "No additional description available."}</p>
+                <div className="mt-6 flex items-center justify-between"><span className="text-xl font-black">{money(product.price)}</span><button disabled={!product.inStock || business.ordersPaused} onClick={() => { updateCart(product.id, 1); setQuickView(null); }} className="rounded-full bg-[#F25F5C] px-5 py-3 font-black text-white disabled:opacity-40">Add to cart</button></div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ========================================================
           SUCCESS MESSAGE

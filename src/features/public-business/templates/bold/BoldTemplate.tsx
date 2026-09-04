@@ -46,7 +46,7 @@ export function BoldTemplate({
       }
     >
       {/* Header */}
-      <header className="border-b border-white/15">
+      <header className="sticky top-0 z-50 border-b border-white/15 bg-black/70 backdrop-blur-2xl seba-glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-4">
             {business.logoUrl ? (
@@ -312,7 +312,7 @@ export function BoldTemplate({
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="aspect-square w-full object-cover"
+                      className="aspect-square w-full object-cover" loading="lazy" decoding="async"
                     />
                   ) : (
                     <div className="aspect-square bg-black/5" />

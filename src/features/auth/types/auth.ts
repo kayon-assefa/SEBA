@@ -8,4 +8,5 @@ export type StaffAuthProfile = {
   full_name: string | null;
   role: string | null;
   status: string | null;
+  must_reset_password?: boolean | null;
 };

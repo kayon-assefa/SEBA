@@ -44,7 +44,7 @@ export function EditorialTemplate({
       }
     >
       {/* Top bar */}
-      <div className="border-b border-black/10">
+      <div className="sticky top-0 z-50 border-b border-black/10 bg-[#f5f1ea]/75 backdrop-blur-2xl seba-glass">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-xs uppercase tracking-[0.18em]">
           <span>SEBA</span>
 

@@ -1,18 +1,23 @@
 import { useLanguage } from "../context/Languagecontext";
+import { seba } from "../design/tokens";
 
 export default function LanguageToggle() {
   const { lang, setLang } = useLanguage();
 
   return (
-    <div className="inline-flex items-center rounded-full border border-[#8B1E2D]/10 bg-white/80 p-1 shadow-sm backdrop-blur">
+    <div
+      className="inline-flex items-center rounded-full border bg-white p-1 shadow-sm"
+      style={{ borderColor: seba.hairline }}
+    >
       <button
         type="button"
         onClick={() => setLang("en")}
-        className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+        className="rounded-full px-3 py-1 text-sm font-semibold transition"
+        style={
           lang === "en"
-            ? "bg-[#8B1E2D] text-white"
-            : "text-[#6B4D4A] hover:bg-[#8B1E2D]/10"
-        }`}
+            ? { background: seba.red, color: "#fff" }
+            : { color: seba.inkMuted }
+        }
         aria-pressed={lang === "en"}
       >
         EN
@@ -20,14 +25,15 @@ export default function LanguageToggle() {
       <button
         type="button"
         onClick={() => setLang("am")}
-        className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+        className="rounded-full px-3 py-1 text-sm font-semibold transition"
+        style={
           lang === "am"
-            ? "bg-[#8B1E2D] text-white"
-            : "text-[#6B4D4A] hover:bg-[#8B1E2D]/10"
-        }`}
+            ? { background: seba.red, color: "#fff" }
+            : { color: seba.inkMuted }
+        }
         aria-pressed={lang === "am"}
       >
-        AM
+        አማ
       </button>
     </div>
   );

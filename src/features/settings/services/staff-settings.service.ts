@@ -2,9 +2,28 @@ import { supabase } from "../../../lib/supabase";
 import { getBusinessId } from "./settings.service";
 import type {
   CreateStaffInput,
+  StaffPermission,
   StaffMember,
   UpdateStaffInput,
 } from "../types/staff-settings";
+
+async function getFunctionErrorMessage(error: unknown) {
+  if (
+    error &&
+    typeof error === "object" &&
+    "context" in error &&
+    error.context instanceof Response
+  ) {
+    try {
+      const payload = await error.context.clone().json();
+      if (typeof payload?.error === "string") return payload.error;
+    } catch {
+      // Fall back to the SDK error below.
+    }
+  }
+
+  return error instanceof Error ? error.message : "Failed to create staff account.";
+}
 
 export const staffSettingsService = {
   async list(): Promise<StaffMember[]> {
@@ -37,12 +56,14 @@ export const staffSettingsService = {
         password: values.password,
         role: values.role,
         branch_id: values.branch_id ?? null,
-        permissions: values.permissions,
+        permissions: Object.entries(values.permissions)
+          .filter(([, allowed]) => allowed)
+          .map(([permission]) => permission as StaffPermission),
       },
     });
 
     if (error) {
-      throw new Error(error.message || "Failed to create staff account.");
+      throw new Error(await getFunctionErrorMessage(error));
     }
 
     if (!data?.staff) {

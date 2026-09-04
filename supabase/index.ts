@@ -119,6 +119,7 @@ Deno.serve(async (req) => {
     const email = String(body.email ?? "").trim().toLowerCase();
     const password = String(body.password ?? "");
     const role = String(body.role ?? "receptionist");
+    const branchId = body.branch_id ? String(body.branch_id) : null;
     const permissions = Array.isArray(body.permissions)
       ? body.permissions
       : [];
@@ -213,14 +214,19 @@ Deno.serve(async (req) => {
       error: staffError,
     } = await admin
       .from("business_staff")
-     .insert({
-  business_id: business.id,
-  user_id: userId,
-  full_name: fullName,
-  email,
-  role,
-  is_active: true,
-})
+      .insert({
+        business_id: business.id,
+        user_id: userId,
+        branch_id: branchId,
+        full_name: fullName,
+        email,
+        role,
+        permissions: Object.fromEntries(
+          permissions.map((permission: string) => [permission, true])
+        ),
+        is_active: true,
+        invitation_status: "accepted",
+      })
       .select()
       .single();
 

@@ -191,17 +191,19 @@ export function usePublicBusiness(
            BUSINESS
            ====================================================== */
 
+        // Public business identity is resolved through a SECURITY DEFINER RPC.
+        // This is intentionally used for both anonymous and authenticated visitors:
+        // direct reads from `businesses` are protected by RLS and can incorrectly
+        // turn an existing public business into a 404 for logged-out visitors.
         const {
           data: businessRow,
           error: businessError,
-        } = await supabase
-          .from("businesses")
-          .select("*")
-          .eq(
-            "username",
-            normalizedUsername
-          )
-          .maybeSingle();
+        } = await supabase.rpc(
+          "get_public_business",
+          {
+            p_username: normalizedUsername,
+          }
+        );
 
         if (businessError) {
           throw businessError;
@@ -220,185 +222,44 @@ export function usePublicBusiness(
           String(businessRow.id);
 
         /* ======================================================
-           BUSINESS SETTINGS
+           PUBLIC DATA
+
+           Load independent public resources in parallel. This is
+           important for busy public pages: one slow query should
+           not make the whole page wait behind the others.
            ====================================================== */
 
-        const {
-          data: settingsRow,
-          error: settingsError,
-        } = await supabase
-          .from("business_settings")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .maybeSingle();
+        const [
+          settingsResult,
+          stateResult,
+          themeResult,
+          hoursResult,
+          servicesResult,
+          productsResult,
+          fieldsResult,
+          staffResult,
+        ] = await Promise.all([
+          supabase.from("business_settings").select("*").eq("business_id", businessId).maybeSingle(),
+          supabase.from("business_state").select("*").eq("business_id", businessId).maybeSingle(),
+          supabase.from("business_themes").select("*").eq("business_id", businessId).maybeSingle(),
+          supabase.from("business_working_hours").select("*").eq("business_id", businessId).order("day_of_week", { ascending: true }),
+          supabase.from("services").select("*").eq("business_id", businessId).order("created_at", { ascending: true }),
+          supabase.from("products").select("*").eq("business_id", businessId).order("created_at", { ascending: true }),
+          supabase.from("appointment_fields").select("*").eq("business_id", businessId).order("created_at", { ascending: true }),
+          supabase.from("staff").select("*").eq("business_id", businessId).order("created_at", { ascending: true }),
+        ]);
 
-        if (settingsError) {
-          console.warn(
-            "SEBA: business settings could not be loaded.",
-            settingsError
-          );
-        }
+        const settingsRow = settingsResult.data;
+        const stateRow = stateResult.data;
+        const themeRow = themeResult.data;
+        const hoursRows = hoursResult.data ?? [];
+        const serviceRows = servicesResult.data ?? [];
+        const productRows = productsResult.data ?? [];
+        const fieldRows = fieldsResult.data ?? [];
+        const staffRows = staffResult.data ?? [];
 
-        /* ======================================================
-           BUSINESS STATE
-           ====================================================== */
-
-        const {
-          data: stateRow,
-          error: stateError,
-        } = await supabase
-          .from("business_state")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .maybeSingle();
-
-        if (stateError) {
-          console.warn(
-            "SEBA: business state could not be loaded.",
-            stateError
-          );
-        }
-
-        /* ======================================================
-           BUSINESS THEME
-           ====================================================== */
-
-        const {
-          data: themeRow,
-          error: themeError,
-        } = await supabase
-          .from("business_themes")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .maybeSingle();
-
-        if (themeError) {
-          console.warn(
-            "SEBA: business theme could not be loaded.",
-            themeError
-          );
-        }
-
-        /* ======================================================
-           WORKING HOURS
-
-           IMPORTANT:
-           We load these for DISPLAY ONLY.
-
-           We do NOT calculate whether the business is open.
-           ====================================================== */
-
-        const {
-          data: hoursRows,
-          error: hoursError,
-        } = await supabase
-          .from("business_working_hours")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .order(
-            "day_of_week",
-            {
-              ascending: true,
-            }
-          );
-
-        if (hoursError) {
-          console.warn(
-            "SEBA: working hours could not be loaded.",
-            hoursError
-          );
-        }
-
-        /* ======================================================
-           SERVICES
-           ====================================================== */
-
-        const {
-          data: serviceRows,
-          error: servicesError,
-        } = await supabase
-          .from("services")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .order(
-            "created_at",
-            {
-              ascending: true,
-            }
-          );
-
-        if (servicesError) {
-          console.warn(
-            "SEBA: services could not be loaded.",
-            servicesError
-          );
-        }
-
-        /* ======================================================
-           PRODUCTS
-           ====================================================== */
-
-        const {
-          data: productRows,
-          error: productsError,
-        } = await supabase
-          .from("products")
-          .select("*")
-          .eq(
-            "business_id",
-            businessId
-          )
-          .order(
-            "created_at",
-            {
-              ascending: true,
-            }
-          );
-
-        if (productsError) {
-          console.warn(
-            "SEBA: products could not be loaded.",
-            productsError
-          );
-        }
-
-        /* ======================================================
-           OPTIONAL APPOINTMENT BUILDER DATA
-           ====================================================== */
-
-        const { data: fieldRows, error: fieldsError } = await supabase
-          .from("appointment_fields")
-          .select("*")
-          .eq("business_id", businessId)
-          .order("created_at", { ascending: true });
-
-        if (fieldsError) {
-          console.warn("SEBA: appointment fields could not be loaded.", fieldsError);
-        }
-
-        const { data: staffRows, error: staffError } = await supabase
-          .from("staff")
-          .select("*")
-          .eq("business_id", businessId)
-          .order("created_at", { ascending: true });
-
-        if (staffError) {
-          console.warn("SEBA: staff could not be loaded.", staffError);
+        for (const result of [settingsResult, stateResult, themeResult, hoursResult, servicesResult, productsResult, fieldsResult, staffResult]) {
+          if (result.error) console.warn("SEBA public page: optional data query failed", result.error);
         }
 
         const appointmentFields: PublicAppointmentField[] = (fieldRows ?? []).map((row: any) => {
@@ -647,7 +508,19 @@ export function usePublicBusiness(
            PUBLISH STATE
            ====================================================== */
 
+        const explicitlyInactive =
+          businessRow.active === false ||
+          businessRow.is_active === false ||
+          settingsRow?.active === false ||
+          settingsRow?.is_active === false ||
+          stateRow?.active === false ||
+          stateRow?.is_active === false ||
+          stateRow?.page_active === false;
+
+        const active = !explicitlyInactive;
+
         const published =
+          active &&
           settingsRow?.is_published !== false &&
           stateRow?.page_unpublished !== true;
 
@@ -855,6 +728,8 @@ export function usePublicBusiness(
               ),
 
             published,
+
+            active,
 
             temporarilyClosed,
 

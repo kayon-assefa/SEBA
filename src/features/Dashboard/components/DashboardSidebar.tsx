@@ -11,6 +11,7 @@ import {
   Users,
   Package,
   BarChart3,
+  CreditCard,
   Settings,
   ChevronsLeft,
   Bell,
@@ -26,6 +27,7 @@ const links = [
   { name: "Customers", to: "/dashboard/customers", icon: Users },
   { name: "Products", to: "/dashboard/products", icon: Package },
   { name: "Analytics", to: "/dashboard/analytics", icon: BarChart3 },
+  { name: "Subscription", to: "/dashboard/subscription", icon: CreditCard },
   { name: "Settings", to: "/dashboard/settings", icon: Settings },
   { name: "Notifications", to: "/notifications", icon: Bell },
 ];

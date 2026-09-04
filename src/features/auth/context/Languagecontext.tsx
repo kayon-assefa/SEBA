@@ -5,12 +5,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { translations, type Language, type TranslationKey } from "../../../lib/translations";
+import { translations, type Language } from "../../../lib/translations";
 
 interface LanguageContextValue {
   lang: Language;
   setLang: (lang: Language) => void;
-  t: (key: TranslationKey) => string;
+  /** Single string translation, with optional {placeholder} interpolation. */
+  t: (key: string, vars?: Record<string, string | number>) => string;
+  /** Translation entries that are string arrays (e.g. strengthLabels). */
+  tList: (key: string) => string[];
 }
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
@@ -23,6 +26,14 @@ function getInitialLang(): Language {
   return saved === "am" ? "am" : "en"; // default is always English
 }
 
+function interpolate(template: string, vars?: Record<string, string | number>) {
+  if (!vars) return template;
+  return Object.entries(vars).reduce(
+    (acc, [key, value]) => acc.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Language>(getInitialLang);
 
@@ -30,13 +41,28 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, lang);
     document.documentElement.lang = lang;
+    document.documentElement.dir = "ltr"; // Amharic (Ge'ez script) is LTR too
   }, [lang]);
 
   const setLang = (next: Language) => setLangState(next);
-  const t = (key: TranslationKey) => translations[lang][key] ?? translations.en[key];
+
+  const t = (key: string, vars?: Record<string, string | number>) => {
+    const dictionary = translations[lang] as Record<string, string | readonly string[]>;
+    const fallbackDictionary = translations.en as Record<string, string | readonly string[]>;
+    const raw = dictionary[key] ?? fallbackDictionary[key] ?? key;
+    const value = typeof raw === "string" ? raw : raw.join(", ");
+    return interpolate(value, vars);
+  };
+
+  const tList = (key: string): string[] => {
+    const dictionary = translations[lang] as Record<string, string | readonly string[]>;
+    const fallbackDictionary = translations.en as Record<string, string | readonly string[]>;
+    const raw = dictionary[key] ?? fallbackDictionary[key] ?? [key];
+    return typeof raw === "string" ? [raw] : [...raw];
+  };
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, tList }}>
       {children}
     </LanguageContext.Provider>
   );

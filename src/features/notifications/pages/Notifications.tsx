@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { Settings } from "lucide-react";
 
-import Sidebar from "../components/Sidebar";
 import NotificationFilters from "../components/NotificationFilters";
 import NotificationItem from "../components/NotificationItem";
 import NotificationSkeleton from "../components/NotificationSkeleton";
@@ -53,11 +52,8 @@ export default function Notifications() {
   const unreadCount = items.filter((n) => !n.read).length;
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <Sidebar unreadCount={unreadCount} />
-
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
+    <div className="seba-dashboard mx-auto w-full max-w-5xl">
+      <div className="seba-glass seba-rise p-5 sm:p-7">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-xl font-semibold text-gray-900">
@@ -133,8 +129,7 @@ export default function Notifications() {
               ))
             )}
           </div>
-        </div>
-      </main>
+      </div>
 
       <NotificationSettingsPanel
         open={settingsOpen}

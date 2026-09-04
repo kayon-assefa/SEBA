@@ -29,7 +29,7 @@ export const notificationService = {
     businessId: string,
     onInsert: (n: AppNotification) => void
   ) {
-    const channelName = `notifications-${businessId}`;
+    const channelName = `notifications-${businessId}-${crypto.randomUUID()}`;
 
     const channel = supabase.channel(channelName);
 
@@ -48,7 +48,11 @@ export const notificationService = {
 
     void channel.subscribe();
 
+    let removed = false;
+
     return () => {
+      if (removed) return;
+      removed = true;
       void supabase.removeChannel(channel);
     };
   },

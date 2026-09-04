@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Check } from "lucide-react";
 import { SettingsCard, SettingsButton } from "../components";
+import { PLANS } from "../../subscription/types";
 
 function date(value: string | null | undefined) {
   if (!value) return "—";
@@ -9,6 +12,7 @@ function date(value: string | null | undefined) {
 const STAFF_LIMITS: Record<string, number> = { basic: 1, premium: 2, enterprise: 4 };
 
 export default function SubscriptionSection() {
+  const navigate = useNavigate();
   const [ctx, setCtx] = useState<any>(null);
   const [msg, setMsg] = useState("");
 
@@ -69,8 +73,48 @@ export default function SubscriptionSection() {
           )}
 
           <div className="mt-5">
-            <SettingsButton onClick={() => (window.location.href = "/subscription")}>Upgrade plan</SettingsButton>
+            <SettingsButton onClick={() => navigate("/dashboard/subscription")}>Upgrade plan</SettingsButton>
           </div>
+        </div>
+      </SettingsCard>
+
+      <SettingsCard title="Available plans" description="Choose the plan that fits your business. You can securely complete payment on the subscription page.">
+        <div className="grid gap-4 lg:grid-cols-3">
+          {PLANS.map((plan) => {
+            const current = plan.id === sub.plan;
+
+            return (
+              <div key={plan.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5">
+                <div>
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
+                      <p className="mt-1 text-sm text-gray-500">{plan.description}</p>
+                    </div>
+                    {current && <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-700">Current</span>}
+                  </div>
+                  <p className="mt-4 text-2xl font-bold text-gray-900">
+                    {new Intl.NumberFormat("en-US").format(plan.price)} ETB<span className="text-sm font-medium text-gray-500"> / month</span>
+                  </p>
+                  <ul className="mt-4 space-y-2">
+                    {plan.features.slice(0, 4).map((feature) => (
+                      <li key={feature} className="flex gap-2 text-sm text-gray-600">
+                        <Check size={16} className="mt-0.5 shrink-0 text-gray-900" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <SettingsButton
+                  className="mt-6 w-full justify-center"
+                  disabled={current}
+                  onClick={() => navigate("/dashboard/subscription")}
+                >
+                  {current ? "Current plan" : `Upgrade to ${plan.name}`}
+                </SettingsButton>
+              </div>
+            );
+          })}
         </div>
       </SettingsCard>
     </div>
